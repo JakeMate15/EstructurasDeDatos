@@ -5,86 +5,53 @@
 #define FALSE 0
 #define TAMPILA 100
 
-void leeExpresion(char * );
-float evalua(PILA, char * );
+void darDatos(PILA);
+void imprimeDatos(PILA , PILA);
 void manejaError(int);
 void liberaMemoria(PILA);
 
 void main(){
-	char cadena[100];
-	float res;
-	PILA S;
+	PILA s, aux;
 
-	S = crearPila();
-    leeExpresion(cadena);
-	res = evalua(S,cadena);
-    printf("%s = %.2f\n", cadena,res);
-	liberaMemoria(S);
+	s = crearPila();
+    aux = crearPila();
+
+    darDatos(s);
+	imprimeDatos(s,aux);
+
+	liberaMemoria(s);
+    liberaMemoria(aux);
 }
 
-void leeExpresion(char * cadena){
-	int pos = 0;
+void darDatos(PILA pila){
+	int op, dato;
 
-	printf("\nEvaluacion de expresiones Postfijas\n");
-    printf("Operaciones Basicas: Suma, REsta, Producto y division");
-    printf("\n\nIntroduzca la expresion postfija: ");
+    do{
+        printf("\nIngresa un elemento a la pila: ");
+        scanf("%d",&dato);
+        apilar(pila,dato);
 
-    while( (cadena[pos++] = getchar()) !='\n');
-    cadena[pos-1]='\0';
+        printf("Quieres agregar otro elemento? Si-1 No-0 ");
+        scanf("%d",&op);
+    }while(op==1);
 }
 
-float evalua(PILA S,char * cadena){
-    float a,b,aux;
-    int pos = 0;
-    char op[1];
-    double conv;
-    int i;
+void imprimeDatos(PILA a, PILA b){
+    int dato;
 
-    while(cadena[pos] != '\0'){
-		
-        *op = cadena[pos++];
+    printf("\nLos elementos de la pila son: \n");
 
-        switch(*op){
-            case '+':   b = desapilar(S);
-                        a = desapilar(S);
-                        apilar(S,a+b);
-                        break;
-            case '-':   b = desapilar(S);
-                        a = desapilar(S);
-                        apilar(S,a-b);     
-                        break;     
-            case '*':   b= desapilar(S);
-                        a = desapilar(S);
-                        apilar(S,a*b);
-                        break;
-            case '/':   b = desapilar(S);
-                        a = desapilar(S);
-                        if(b==0){
-                            manejaError(4);
-                            return 0;
-                            break;
-                        }   
-                        apilar(S,a/b);  
-                        break;   
-            case '^':   b = desapilar(S);
-                        a = desapilar(S);
-						if(b<1){
-							manejaError(5);
-                            return 0;
-                            break;
-						}
-						aux = a;
-						for(i=1;i<b;i++){
-							aux*=a;
-						}
-						apilar(S,aux);     
-						break;  
-            default:    conv = atof(op);
-                        apilar(S,conv);  
-        }
+    while(!es_vaciaPila(a)){
+        dato = desapilar(a);
+        apilar(b,dato);
     }
 
-    return (desapilar(S));
+    while(!es_vaciaPila(b)){
+        dato = desapilar(b);
+        apilar(a,dato);
+        printf("%d ",dato);
+    }
+
 }
 
 void manejaError(int e){
